@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a reproducible application or hardware-integration problem
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Remove credentials, serial numbers, personal paths, raw captures, paid
+        IRs, and presets before submitting. Report security issues privately.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the expected and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Provide the smallest safe sequence that reproduces the issue.
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: QC Tone Architect version or commit
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS, Node.js, and browser versions
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: CorOS and app-firmware versions
+      description: Leave blank if no Quad Cortex hardware was involved. Never include its serial number.
+  - type: dropdown
+    id: hardware-write
+    attributes:
+      label: Did this involve a direct hardware transfer?
+      options:
+        - "No"
+        - "Yes — transfer completed"
+        - "Yes — transfer failed but rollback was verified"
+        - "Yes — rollback could not be verified"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs
+      render: shell

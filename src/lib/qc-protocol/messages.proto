@@ -1,0 +1,406 @@
+// Reconstructed from Neural DSP Cortex Control v4.0.1 binary
+// Quad Cortex communication protocol - reverse engineered protobuf schema
+syntax = "proto3";
+
+package cortex_protobuf_v2;
+
+import "preset.proto";
+
+// ============================================================
+// Core Enums
+// ============================================================
+
+message CortexMessageType {
+  enum Enum {
+    Undefined = 0;
+    Grid = 1;                          // Modify signal chain grid
+    SetlistPosition = 2;               // Navigate presets/setlists
+    IOSettings = 3;                    // Input/output configuration
+    File = 4;                          // File operations (presets, captures, IRs)
+    IOMeter = 5;                       // I/O level meters
+    Tuner = 6;                         // Tuner
+    Diagnostics = 7;                   // System diagnostics
+    MIDISettings = 8;                  // MIDI configuration
+    GeneralSettings = 9;               // General device settings
+    Version = 10;                      // Firmware/software version info
+    ProductionAutomationMode = 11;     // Factory testing mode
+    GridMove = 12;                     // Move blocks in grid
+    Scene = 13;                        // Scene selection
+    Mode = 14;                         // Operating mode (preset/scene/stomp)
+    RecallPreset = 15;                 // Load a preset
+    EnableCaptureOut = 16;             // Neural Capture output
+    MasterVolume = 17;                 // Master volume control
+    CloudLogin = 18;                   // Cortex Cloud authentication
+    DefaultParameters = 19;            // Default model parameters
+    RecentsFavorites = 20;             // Recents & favorites list
+    UndoRedo = 21;                     // Undo/redo operations
+    SceneCopy = 22;                    // Copy scene data
+    SceneLabel = 23;                   // Scene label/name
+    ShowGigView = 24;                  // Toggle gig view
+    Screenshot = 25;                   // Take screenshot
+    CPULoad = 26;                      // CPU load monitoring
+    ShowTuner = 27;                    // Toggle tuner display
+    Looper = 28;                       // Looper control
+    ProductForward = 29;               // Cloud product transfer
+    BackupsForward = 30;               // Backup transfer
+    LogsForward = 31;                  // Log forwarding
+    KeepAlive = 32;                    // Connection keepalive
+    GlobalTempo = 33;                  // Global tempo
+    PresetDirty = 34;                  // Preset modified flag
+    ModuleStats = 35;                  // Module statistics
+    NeuralCapture = 36;                // Neural Capture process
+    GridModelMeter = 37;               // Per-model meters in grid
+    GlobalEQ = 38;                     // Global EQ settings
+    RecentSearches = 39;               // Recent search queries
+    LocalBackup = 40;                  // Local backup management
+    CloudBackup = 41;                  // Cloud backup management
+    CompilerInhibitedModules = 42;     // DSP compiler info
+    SystemTimeSync = 43;               // Time synchronization
+    Logs = 44;                         // System logs
+    ProcessDownloadsQueue = 45;        // Download queue
+    CloudProduct = 46;                 // Cloud product management
+    Confirmation = 47;                 // Confirmation dialogs
+    SceneColor = 48;                   // Scene color assignment
+    Connection = 49;                   // Connection state
+    NewModels = 50;                    // New model availability
+    ModelRepo = 51;                    // Model repository browsing
+    ResetCommsBuffers = 52;            // Reset communication buffers
+    SuspendConnection = 53;            // Suspend connection
+    PinnedModels = 54;                 // Pinned/favorite models
+    GigViewButton = 55;               // Gig view button config
+    GenericError = 56;                 // Error messages
+    BulkOperation = 57;               // Bulk file operations
+    License = 58;                      // License management
+    PresetSpeedTest = 59;              // Preset speed testing
+    Updater = 60;                      // Firmware updater
+    UpdaterForward = 61;               // Update file forwarding
+    GainCalibration = 62;              // Gain calibration
+    NeuralCapture2 = 63;               // Neural Capture v2
+    Serialization = 64;                // Device serialization
+    TestFarm = 65;                     // Test farm
+    ProductionTest = 66;               // Production testing
+    LoadAutomatedTestPreset = 67;      // Load test preset
+    SetTestPresetInputOutputPorts = 68;
+    SetTestPresetSplitMixPoints = 69;
+    GenerateTestPreset = 70;           // Generate test preset
+    NumberOfMessageTypes = 71;
+  }
+}
+
+message MessageAction {
+  enum Enum {
+    CREATE = 0;
+    UPDATE = 1;
+    DELETE = 2;
+    READ = 3;
+    MOVE = 4;
+    COPY = 5;
+    UPLOAD = 6;
+    DOWNLOAD = 7;
+    SWAP = 8;
+  }
+}
+
+// ============================================================
+// Grid Messages (Signal Chain Control)
+// ============================================================
+
+message GridMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional BinaryPreset preset = 3;     // Full preset data
+  optional UpdateType update_type = 4;
+
+  enum UpdateType {
+    METER_UPDATE = 0;
+  }
+}
+
+message GridMoveElement {
+  uint32 from_row = 1;
+  uint32 from_col = 2;
+  uint32 to_row = 3;
+  uint32 to_col = 4;
+  bool is_drop = 5;
+}
+
+message GridMoveRow {
+  repeated uint32 modelIds = 1;
+}
+
+message GridMoveGrid {
+  repeated GridMoveRow rows = 1;
+}
+
+message GridMoveMessage {
+  optional uint64 request_id = 1;
+  repeated GridMoveElement move = 2;
+  optional GridMoveGrid grid = 3;
+}
+
+// ============================================================
+// Preset & Scene Messages
+// ============================================================
+
+message RecallPresetReason {
+  enum Enum {
+    OTHER = 0;
+    UNDO = 1;
+    SAVE = 2;
+  }
+}
+
+message RecallPresetMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional BinaryPreset preset = 3;
+  optional RecallPresetReason.Enum reason = 4;
+}
+
+message SceneMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional uint32 selected_scene = 3;   // 0-7 for scenes A-H
+}
+
+message SceneBlockBypass {
+  enum Enum {
+    SCENE_BYPASS_OFF = 0;
+    SCENE_BYPASS_ON = 1;
+  }
+}
+
+message SceneLabelMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional int32 index = 3;
+  optional string label = 4;
+}
+
+// ============================================================
+// File Operations
+// ============================================================
+
+message ProductData {
+  optional string key = 1;
+  optional int32 index = 2;
+  optional string name = 3;
+  optional string author = 4;
+  optional string author_id = 5;
+  optional string coros_version = 6;
+  repeated string tags = 7;
+  optional string date = 8;
+  optional int32 gain = 9;
+  optional string cloud_id = 10;
+  optional string description = 11;
+  optional string shared_by = 12;
+  repeated ProductDependency factory_dependencies = 13;
+  repeated ProductDependency product_dependencies = 14;
+  optional int32 instrument = 15;
+  optional int32 device = 16;
+  optional bytes extraMetadata = 17;
+  optional string old_key = 18;
+  optional bool is_readonly = 19;
+  optional string version = 20;
+  optional int64 date_ms_since_epoch = 21;
+}
+
+message ProductDependency {
+  string hash = 1;
+  optional int32 missing = 2;
+  optional int32 visible = 3;
+  optional int32 published = 4;
+  optional string cloud_id = 5;
+  optional string name = 6;
+  optional string product_type = 7;
+}
+
+message FolderInfo {
+  optional string key = 1;
+  optional string parent_key = 2;
+  optional string name = 3;
+  optional bool is_factory = 4;
+  optional bool is_downloads = 5;
+  optional bool is_user_default = 6;
+  repeated ProductData files = 7;
+  optional bool is_cloud = 8;
+  optional bool is_favorites = 9;
+  optional bool is_plugin = 10;
+}
+
+message FileMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional int32 type = 3;
+  optional FolderInfo folder = 4;
+  optional FolderInfo to_folder = 5;
+  optional bool short_listing = 6;
+  optional bytes ir_payload = 7;
+  optional BinaryPreset preset_payload = 8;   // Can send a full preset!
+  optional int32 total_bulk_create_count = 9;
+  optional bool delete_from_library = 10;
+}
+
+// ============================================================
+// Setlist & Navigation
+// ============================================================
+
+message SetlistPositionMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional string folder_key = 3;
+  optional uint32 position = 4;
+  optional bool is_factory = 5;
+  optional bool is_downloads = 6;
+  optional string key_in_downloads = 7;
+  optional bool is_plugin = 8;
+  optional string key_in_plugin_folder = 9;
+}
+
+// ============================================================
+// Connection & Keepalive
+// ============================================================
+
+message ConnectionMessage {
+  optional uint64 request_id = 1;
+  optional bool connected = 2;
+}
+
+message KeepAliveMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  bool is_online = 3;
+  optional float timeout = 4;
+}
+
+message ResetCommsBuffersMessage {
+  optional uint64 request_id = 1;
+  optional string session_id = 2;
+}
+
+message ModelRepoMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional bytes model_repo_payload = 3;
+}
+
+// ============================================================
+// Version & Device Info
+// ============================================================
+
+message VersionMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional string linux_kernel_version = 3;
+  optional string zenos_git_hash = 4;
+  optional string zenwireless_fw_version = 5;
+  optional string uboot_version = 6;
+  optional string app_fw_version = 7;
+  optional string bootloader_fw_version = 8;
+  optional string device_serial_number = 9;
+  optional bytes comms_version = 10;
+  optional string cortex_control_version = 11;
+  optional DeviceType device_type = 12;
+  optional bool is_ess = 13;
+  optional bool cortex_control_version_valid = 14;
+  optional string custom_name = 15;
+  optional string mac_address = 16;
+  optional string zencoder_fw_app = 17;
+  optional string zencoder_fw_bootloader = 18;
+
+  enum DeviceType {
+    QC = 0;
+    ATMA = 1;    // Nano Cortex
+  }
+}
+
+// ============================================================
+// I/O Settings
+// ============================================================
+
+message InputPortSettings {
+  uint32 input_port_id = 1;
+  optional float level = 2;
+  optional float input_zmode = 3;
+  optional float input_type = 4;
+  optional float ground_lift = 5;
+  optional bool plugged = 6;
+}
+
+message OutputPortSettings {
+  uint32 output_port_id = 1;
+  optional float level = 2;
+  optional float ground_lift = 3;
+  optional bool mute = 4;
+  optional bool plugged = 5;
+}
+
+message HeadphonesFeedLevel {
+  float level = 1;
+  uint32 output_port_id = 2;
+}
+
+message HeadphonesSettings {
+  optional float level = 1;
+  repeated HeadphonesFeedLevel hp_feed = 2;
+  optional bool plugged = 3;
+}
+
+message USBPortSettings {
+  optional float level = 1;
+  optional float hp_select = 2;
+  optional bool plugged = 3;
+  optional float dry_wet = 4;
+}
+
+message ExpPortSettings {
+  int32 exp_port_id = 1;
+  optional bool plugged = 2;
+  optional float level = 3;
+  optional bool calibrating = 4;
+}
+
+message MIDIPortSettings {
+  optional float midi_thru = 1;
+}
+
+message PortSettings {
+  repeated InputPortSettings in_port = 1;
+  repeated OutputPortSettings out_port = 2;
+  optional HeadphonesSettings hp_port = 3;
+  optional USBPortSettings usb_port = 4;
+  optional MIDIPortSettings midi_port = 5;
+  repeated ExpPortSettings exp_port = 6;
+}
+
+message IOSettingsMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+  optional PortSettings settings = 3;
+  optional bool xlr1_2_linked = 4;
+  optional bool out3_4_linked = 5;
+}
+
+// ============================================================
+// Misc Messages
+// ============================================================
+
+message UndoRedoMessage {
+  MessageAction.Enum action = 1;
+  optional uint64 request_id = 2;
+}
+
+message ConfirmationMessage {
+  optional string title = 1;
+  optional string msg = 2;
+  optional string ok_title = 3;
+  optional string cancel_title = 4;
+  optional uint64 request_id = 5;
+}
+
+message ConfirmationAction {
+  enum Enum {
+    OK = 0;
+    CANCEL = 1;
+  }
+}

@@ -40,7 +40,7 @@
   "dependencies": {
     "@openai/codex": "^0.151.0",
     "fast-xml-parser": "^5.11.1",
-    "lucide-react": "^1.7.0",
+    "lucide-react": "^1.46.0",
     "next": "^16.3.3",
     "node-hid": "^3.3.0",
     "openai": "^6.33.0",

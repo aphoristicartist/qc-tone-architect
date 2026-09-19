@@ -69,21 +69,38 @@ identify those devices as available to all Quad Cortex users.
 Custom-IR paths are local to one Quad Cortex and are not portable between users.
 The bundled recipes therefore use factory cabs only.
 
+### York Audio IRs
+
+[York Audio](https://www.yorkaudio.co/) impulse responses can make a dramatic
+difference in cabinet body, microphone character, and overall realism on a Quad
+Cortex. They are commercial, user-owned assets, so QC Tone Architect does not
+bundle them, generate IR paths, or transfer an IR selection that is local to one
+unit. If you own a York Audio pack, upload it through Cortex Control, choose it
+manually in the QC's IR Loader, and replace the generated factory-cab block when
+you want that character.
+
 ## Requirements
 
-- Node.js 20 or newer and npm.
+- Node.js 22.12 or newer and pnpm 12 or newer.
 - A ChatGPT/Codex login (default) or an OpenAI-compatible API credential.
 - For hardware features: a Quad Cortex connected by USB to the same computer.
+
+The project standardizes on pnpm 12 and records the exact manager in
+`package.json`. pnpm is preferred over Bun
+for the supported path because `node-hid` and the bundled Codex CLI exercise
+Node-native and child-process behavior that must remain deterministic on the
+computer attached to USB hardware.
 
 ## Quick start
 
 From this directory:
 
 ```bash
-npm ci
+npm install --global pnpm@12
+pnpm install
 cp .env.example .env.local
-npx codex login
-npm run dev
+pnpm exec codex login
+pnpm run dev
 ```
 
 On Windows PowerShell, replace the copy command with:
@@ -108,7 +125,7 @@ CODEX_TIMEOUT_MS=120000
 
 The app uses the bundled Codex CLI and the ChatGPT login belonging to the OS user
 running the server. `CODEX_MODEL` is optional. Check authentication with
-`npx codex login status`; running `npx codex` also starts the first-run sign-in
+`pnpm exec codex login status`; running `pnpm exec codex` also starts the first-run sign-in
 flow. See the official [Codex CLI guide](https://developers.openai.com/codex/cli)
 and [authentication guide](https://developers.openai.com/codex/auth).
 
@@ -138,6 +155,62 @@ GLM_RESPONSE_FORMAT=json_object
 Use `json_schema` only if that provider and model document support it. Runtime
 schema validation still runs for either response mode. Environment files are
 ignored by Git; `.env.example` contains placeholders only.
+
+## CLI and coding-agent integration
+
+The same validated generation and transfer boundary is available directly from
+the terminal:
+
+The CLI loads `.env.local` and `.env` without overriding values already set in
+the shell, so the same provider configuration works in the browser app and in
+Claude Code or Codex.
+
+```bash
+pnpm qc help
+pnpm qc generate --prompt "dark Turkish-oud-inspired clean tone" \
+  --target quad-cortex --output /tmp/turkish-oud.json
+pnpm qc recipe turkish-oud --output /tmp/turkish-oud.json
+pnpm qc discover
+pnpm qc preflight /tmp/turkish-oud.json
+```
+
+`discover` and `preflight` are read-only. Transfer is the only mutating CLI
+command and always requires an explicit confirmation:
+
+```bash
+pnpm qc transfer /tmp/turkish-oud.json \
+  --confirmation APPLY_TO_EMPTY_PRESET
+```
+
+### Claude Code
+
+Claude Code automatically discovers the repository skill in
+`.claude/skills/qc-tone-architect`. From this checkout, ask:
+
+```text
+Use the qc-tone-architect skill to create a Turkish-oud-inspired tone,
+then discover and preflight my Quad Cortex.
+```
+
+Claude Code also reads the command and hardware boundaries in `AGENTS.md`.
+
+### Codex
+
+Codex reads `AGENTS.md` automatically. To install the portable skill:
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R skills/qc-tone-architect ~/.codex/skills/
+```
+
+Then ask:
+
+```text
+Use the qc-tone-architect skill to generate a tone and run read-only preflight.
+```
+
+Agents must not run the transfer command unless you explicitly request a
+hardware mutation in the current conversation and confirm the safety checklist.
 
 ## Safe hardware workflow
 
@@ -176,21 +249,21 @@ confirm those two settings for every recording session.
 ## Development
 
 ```bash
-npm run dev          # Local development server on 127.0.0.1
-npm run build        # Optimized production build
-npm run start        # Run the production build on 127.0.0.1
-npm run lint         # ESLint
-npm run typecheck    # TypeScript, including tests and scripts
-npm test             # Unit and route tests
-npm run test:e2e     # Build plus four Playwright browser projects
-npm run audit        # Dependency vulnerability audit
-npm run verify       # Complete local release gate except the online audit
+pnpm run dev          # Local development server on 127.0.0.1
+pnpm run build        # Optimized production build
+pnpm run start        # Run the production build on 127.0.0.1
+pnpm run lint         # ESLint
+pnpm run typecheck    # TypeScript, including tests and scripts
+pnpm test             # Unit and route tests
+pnpm run test:e2e     # Build plus four Playwright browser projects
+pnpm run audit        # Dependency vulnerability audit
+pnpm run verify       # Complete local release gate except the online audit
 ```
 
 Install browser binaries once before the first E2E run:
 
 ```bash
-npx playwright install chromium firefox webkit
+pnpm exec playwright install chromium firefox webkit
 ```
 
 The E2E suite uses a deterministic local provider and simulated hardware. It
@@ -198,7 +271,7 @@ does not spend model usage or write to a Quad Cortex.
 
 ### Protocol research tool
 
-`npm run qc:capture` passively records HID traffic for controlled development;
+`pnpm run qc:capture` passively records HID traffic for controlled development;
 it does not send reports to the unit. Captures stay under ignored `captures/`.
 They may contain device-specific or copyrighted data, so sanitize them and
 obtain permission before sharing any fixture.
@@ -210,7 +283,7 @@ and load an expendable preset with cells 1.1 through 1.4 empty first:
 ```bash
 QC_HIL_SERIAL='your-device-serial' \
 QC_HIL_TRANSFER_CONFIRM='MUTATE_AND_RESTORE_EMPTY_QC_PRESET' \
-npx vitest run src/lib/qc-protocol/hardware-transfer.hil.test.ts
+pnpm exec vitest run src/lib/qc-protocol/hardware-transfer.hil.test.ts
 ```
 
 ## Architecture

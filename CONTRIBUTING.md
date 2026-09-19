@@ -16,21 +16,31 @@ well-tested pull requests are easiest to review.
 ## Development setup
 
 ```bash
-npm ci
+npm install --global pnpm@12
+pnpm install
 cp .env.example .env.local
-npm run dev
+pnpm run dev
 ```
 
 Before opening a pull request, install Playwright's browsers and run:
 
 ```bash
-npx playwright install chromium firefox webkit
-npm run verify
-npm run audit
+pnpm exec playwright install chromium firefox webkit
+pnpm run verify
+pnpm run audit
 ```
 
 Tests must not require provider credits or connected hardware. Use the local
 fake provider and protocol fakes for normal CI coverage.
+
+Dependency notes:
+
+- Commit `pnpm-lock.yaml`; do not recreate an npm lockfile.
+- `pnpm-workspace.yaml` allowlists only the native build scripts required by
+  `node-hid` and `esbuild`. Do not enable install scripts broadly.
+- Keep TypeScript on the modern supported 5.9 line until `typescript-eslint`
+  supports TypeScript 7. Revisit that cap with its release notes, not by
+  blindly taking the newest major.
 
 ## Device and control profiles
 
@@ -62,7 +72,7 @@ if they contain personal, licensed, or proprietary data.
 - Explain the user-visible change and its safety impact.
 - Add or update tests and documentation.
 - Keep unrelated formatting or dependency churn out of the change.
-- Confirm `npm run verify` and `npm run audit` pass.
+- Confirm `pnpm run verify` and `pnpm run audit` pass.
 - Call out whether real hardware was used and the exact firmware, without
   publishing its serial number.
 

@@ -1,0 +1,182 @@
+import type { TonePreset } from "./types";
+
+/**
+ * A deterministic, factory-device recipe for reproducing the feel of a Turkish
+ * oud with an electric or piezo-equipped guitar. The player, tuning, and
+ * microtonal nuance remain essential; the Quad Cortex supplies body, attack,
+ * and resonant ambience.
+ */
+export const TURKISH_OUD_TONE: TonePreset = {
+  recording_target: "quad-cortex",
+  tone_name: "Turkish Oud Voice",
+  description:
+    "A dry, woody acoustic-instrument approximation with controlled attack, focused low-mids, and a short resonant room. It is intended as an oud-inspired voice rather than an exact emulation.",
+  inspiration: "Turkish oud body resonance and close-miked makam performance",
+  signal_chain: [
+    {
+      position: 1,
+      row: 1,
+      device_id: "douglas-shining-comp-m",
+      device_name: "Douglas Shining Comp (M)",
+      role: "Tames pick attack and evens the resonant sustain",
+      bypassed: false,
+      parameters: {
+        INPUT: 38,
+        ATTACK: 58,
+        RELEASE: 42,
+        MAKEUP: 44,
+        MIX: 72,
+      },
+    },
+    {
+      position: 2,
+      row: 1,
+      device_id: "plugin-parametric-4",
+      device_name: "Plugin Parametric-4",
+      role: "Shapes the rounded body and bright nylon-like attack",
+      bypassed: false,
+      parameters: {
+        HPF: 24,
+        LO_GAIN: 44,
+        LO_FREQ: 38,
+        LO_MID_GAIN: 36,
+        LO_MID_FREQ: 52,
+        HI_MID_GAIN: 50,
+        HI_MID_FREQ: 60,
+        HI_GAIN: 46,
+        HI_FREQ: 58,
+        LPF: 56,
+      },
+    },
+    {
+      position: 3,
+      row: 1,
+      device_id: "uk-c30",
+      device_name: "UK C30",
+      role: "Clean, chimey amplification for the acoustic-style voice",
+      bypassed: false,
+      parameters: {
+        VOLUME: 40,
+        BOOST: false,
+        BASS: 48,
+        TREBLE: 52,
+        TONE_CUT: 58,
+      },
+    },
+    {
+      position: 4,
+      row: 1,
+      device_id: "cab-2x12-vox",
+      device_name: "2x12 UK Blue",
+      role: "Alnico-style woody resonance",
+      bypassed: false,
+      parameters: {},
+    },
+    {
+      position: 5,
+      row: 1,
+      device_id: "chorus-ce1",
+      device_name: "Chorus CE-1",
+      role: "Very subtle string-doubling and body movement",
+      bypassed: false,
+      parameters: {
+        MIX: 10,
+        MODE: true,
+        CHR_RATE: 30,
+        VIB_RATE: 28,
+        VIB_DEPTH: 22,
+        WIDTH: 32,
+        SYNC: false,
+      },
+    },
+    {
+      position: 6,
+      row: 1,
+      device_id: "room-reverb",
+      device_name: "Room Reverb",
+      role: "Short resonant room without washing the attack away",
+      bypassed: false,
+      parameters: {
+        DECAY: 26,
+        PRE_DELAY: 18,
+        HIGH_PASS: 30,
+        LOW_PASS: 58,
+        MIX: 18,
+        TRAILS: true,
+      },
+    },
+  ],
+  scenes: [
+    {
+      name: "Picked Oud",
+      description: "Dry, articulate picking with clear body knock.",
+      changes: [
+        {
+          row: 1,
+          position: 1,
+          parameters: { ATTACK: 62, MIX: 68 },
+        },
+        {
+          row: 1,
+          position: 5,
+          parameters: { MIX: 8 },
+        },
+        {
+          row: 1,
+          position: 6,
+          parameters: { MIX: 14, DECAY: 22 },
+        },
+      ],
+    },
+    {
+      name: "Makam Sustain",
+      description: "Slightly rounder sustain for melodic phrases.",
+      changes: [
+        {
+          row: 1,
+          position: 1,
+          parameters: { ATTACK: 52, MIX: 78 },
+        },
+        {
+          row: 1,
+          position: 2,
+          parameters: { LO_MID_GAIN: 42, HI_MID_GAIN: 46 },
+        },
+        {
+          row: 1,
+          position: 6,
+          parameters: { MIX: 24, DECAY: 32 },
+        },
+      ],
+    },
+    {
+      name: "Ensemble Oud",
+      description: "Wider ensemble aura for overdubs and backing texture.",
+      changes: [
+        {
+          row: 1,
+          position: 5,
+          parameters: { MIX: 18, WIDTH: 42 },
+        },
+        {
+          row: 1,
+          position: 6,
+          parameters: { MIX: 32, DECAY: 38 },
+        },
+        {
+          row: 1,
+          position: 3,
+          parameters: { VOLUME: 44, TREBLE: 50 },
+        },
+      ],
+    },
+  ],
+  tips: [
+    "Use the neck or piezo pickup, roll the guitar tone slightly down, and pick closer to the bridge for Turkish-oud articulation.",
+    "The microtonal inflections come from your fretting, slides, and tuning; this preset shapes timbre only.",
+    "If the low end booms, lower LO_GAIN before reducing the amplifier bass control.",
+    "For more cabinet realism, legally purchase and install a York Audio IR on the Quad Cortex, then manually replace the factory cab with your chosen IR Loader selection.",
+    "Audition all three scenes at performance volume before saving the preset on the Quad Cortex.",
+  ],
+  genre_tags: ["turkish", "oud", "makam", "acoustic", "world"],
+};

@@ -61,6 +61,7 @@ Your job: given a user's description of their desired sound (instrument, artist 
 8. Scene changes must refer to blocks that exist in the signal chain and may only vary parameters already present on that block.
 9. Never put "bypassed" in a scene change. Newly placed QC blocks cannot enable bypass scene mode over USB. For scene-specific wet-effect on/off behavior, include MIX in the block's base parameters and vary MIX between 0 and the desired value.
 10. Licensed plugin devices appear below only when the user explicitly confirmed ownership. Never substitute a device that is absent from the list.
+11. IR Loader is not generatable or transfer-safe. If the user asks for maximum cabinet realism, recommend a legally purchased and locally installed third-party IR collection such as York Audio, then explain that they can manually replace the factory cab block with their own IR Loader selection after transfer. Never emit an IR path or IR Loader block.
 ${targetRules}
 
 ## RESPONSE FORMAT

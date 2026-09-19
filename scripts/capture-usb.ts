@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 /**
  * USB HID Traffic Capture Tool
  *
@@ -6,7 +5,7 @@
  * to reverse-engineer the exact envelope format.
  *
  * Usage:
- *   npx tsx scripts/capture-usb.ts
+ *   pnpm run qc:capture
  *
  * Steps:
  *   1. Make sure Cortex Control is CLOSED
@@ -16,8 +15,8 @@
  */
 
 import * as HID from "node-hid";
-import { appendFileSync, mkdirSync } from "fs";
-import { join } from "path";
+import { appendFileSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
 
 const QC_VID = 0x152a;
 const QC_PID = 0x880a;
